@@ -5,19 +5,24 @@ public class Customer implements Comparable<Customer> {
 	private String stylist_id;
 	private long id;
 	private String email;
-	private String stylist_name;
+	private String stylist_name, phone;
 
-	public Customer (String name,String email){
-		this.id=-1;
-		this.name=name;
-		this.email=email;
+	public Customer(String name, String email) {
+		this.id = -1;
+		this.name = name;
+		this.email = email;
 	}
-	public Customer(String name, String stylist_id, int number, String email) {
+
+	public Customer(String name, String stylist_id, String phone) {
 		this.name = name;
 		this.stylist_id = stylist_id;
-		this.id = number;
-		this.email = email;
+		this.id = -1;
 		stylist_name = null;
+		this.phone = phone;
+	}
+
+	public String getPhoneNumber() {
+		return this.phone;
 	}
 
 	public void setStylistName(String name) {

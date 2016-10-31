@@ -1901,17 +1901,26 @@ public class SQL {
 		}
 		return h;
 	}
-
-	public void addToQueue(Customer c) {
+/***
+ * Will generate a new record in the live_feed DB and release connection
+ * */
+	public void confirmNewTicket(Customer c, Connection oldcon) {
 		Connection conn = null;
 		PreparedStatement p = null;
 		ResultSet r = null;
 		try {
 			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
-			p = conn.prepareStatement("INSERT INTO `live_feed` (`date_time`, `customer_name`, `id`, `stylist_request_id`,`number`,`email`) " + "VALUES (CURRENT_TIMESTAMP, '" + c.getName()
-			+ "', NULL ,'" + c.getStylistID() + "','" + c.getID() + "','" + c.getEmail() + "');");
+			p = conn.prepareStatement("INSERT INTO `live_feed` (`date_time`, `customer_name`, `stylist_request_id`,`email`,`phone`) " + "VALUES (?,?,?,?,?)");
+			p.setString(1, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			p.setString(2, c.getName());
+			p.setString(3, c.getStylistID());
+			p.setString(4, c.getEmail());
+			p.setString(5, c.getPhoneNumber());
 			p.execute();
-
+			
+			p = conn.prepareStatement("UNLOCK TABLES");
+			p.execute();
+			oldcon.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -2148,7 +2157,7 @@ public class SQL {
 			p.setString(1, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 			p.setLong(2, cust.getID());
 			p.setString(3, a.getBarcode());
-			return p.execute();
+			return p.execute(); 
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2156,6 +2165,23 @@ public class SQL {
 		} finally {
 			this.closeConnections(p, null, conn);
 		}
-		
+	}
+	/****
+	 * This will lock the current session. This will be implemented along with
+	 * a Timer. Normally, once the timer is stopped then the session would 
+	 * release its hold.
+	 * */
+	public Connection lockTicketTable() {
+		Connection conn = null;
+		PreparedStatement p;
+		try {///////////////////////////////////// FIXXXXXXXXXXXXXXXXXXXXXXX
+			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
+			p = conn.prepareStatement("LOCK TABLE `live_feed` READ;");
+			p.execute();
+			return conn; 
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		return conn;
 	}
 }

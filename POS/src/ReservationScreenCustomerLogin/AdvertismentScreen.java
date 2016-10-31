@@ -133,7 +133,6 @@ public class AdvertismentScreen extends JFrame implements ActionListener {
 
 		ad_panel.setVisible(true);
 		this.setUndecorated(true);
-		this.updateList();
 		this.setVisible(true);
 
 	}
@@ -163,11 +162,7 @@ public class AdvertismentScreen extends JFrame implements ActionListener {
 
 					ReedemCoupon r = new ReedemCoupon(h.get(name));
 					r.dispose();
-					r=null;
-					
-
-				}
-
+					}
 			});
 			ad_panel.add(b);
 		}
