@@ -13,6 +13,7 @@ import javax.mail.internet.MimeMessage;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 // [END multipart_includes]
 
@@ -25,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import POSObjects.Stylist;
+import POSObjects.Ticket;
 import ReservationScreenCustomerLogin.KeyBoard.KEYBOARD;
 import SQLclass.SQL;
 
@@ -34,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.Font;
@@ -43,7 +46,8 @@ import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.awt.event.ActionEvent;
 import javax.swing.border.LineBorder;
@@ -57,6 +61,7 @@ import MainFrame.POSFrame;
 import java.awt.Color;
 
 import javax.mail.*;
+import java.awt.SystemColor;
 
 public class ReservationForm extends JDialog implements FocusListener {
 
@@ -72,7 +77,6 @@ public class ReservationForm extends JDialog implements FocusListener {
 	private final String[] SMS_GATEWAY = { "@message.alltel.com", "@txt.att.net", "@myboostmobile.com", "@messaging.sprintpcs.com", "@tmomail.net", "@email.uscc.net", "@vtext.com", "@vmobl.com" };
 	// private int guarantee_ticket;
 	private JLabel current_ticket_label;
-	private JLabel your_ticket_label;
 	private KeyBoard kb;
 	private Connection conn;
 
@@ -80,6 +84,9 @@ public class ReservationForm extends JDialog implements FocusListener {
 	 * Create the dialog.
 	 */
 	public ReservationForm(SQL sql) {
+		this.setIconImage(new ImageIcon(POSFrame.PICTURE_DIRECTORY + "\\").getImage());
+		getContentPane().setBackground(SystemColor.controlHighlight);
+		setTitle("ACBA: Request Stylist");
 		this.sql = sql;
 		new Thread(new Runnable() {
 
@@ -92,10 +99,26 @@ public class ReservationForm extends JDialog implements FocusListener {
 		}).start();
 		this.setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);
 		setModal(true);
-		this.setMinimumSize(new Dimension(865, 370));
-		getContentPane().setLayout(new BorderLayout());
+		this.setMinimumSize(new Dimension(865, 350));
+		// getContentPane().setLayout(new BorderLayout());
+		this.stylists = sql.getLoadedStylists();
+		DefaultListModel model_data = new DefaultListModel();
+		DefaultListModel mode_wait = new DefaultListModel();
+		int i = -1;
+		for (String name : this.stylists.keySet()) {
+			if (name.toLowerCase().contains("no preference")) {
+				continue;
+			}
+			model_data.add(++i, name);
+			// int wait = sql.getWait(stylists.get(name));// approx 45min per customer
+			mode_wait.add(i, "update this.. " + " waiting ~ " + getTime(1 * 45) + " wait");
+		}
+		getContentPane().setLayout(null);
+		contentPanel.setBounds(0, 0, 849, 326);
+		contentPanel.setBackground(SystemColor.controlHighlight);
+
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		getContentPane().add(contentPanel);
 		contentPanel.setLayout(null);
 
 		JScrollPane scrollPane = new JScrollPane();
@@ -112,15 +135,6 @@ public class ReservationForm extends JDialog implements FocusListener {
 		scrollPane_1.setViewportView(wait_list);
 		JList list = new JList();
 		list.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		this.stylists = sql.getLoadedStylists();
-		DefaultListModel model_data = new DefaultListModel();
-		DefaultListModel mode_wait = new DefaultListModel();
-		int i = -1;
-		for (String name : this.stylists.keySet()) {
-			model_data.add(++i, name);
-			// int wait = sql.getWait(stylists.get(name));// approx 45min per customer
-			mode_wait.add(i, "update this.. " + " waiting ~ " + getTime(1 * 45) + " wait");
-		}
 		wait_list.setModel(mode_wait);
 		list.setModel(model_data);
 
@@ -145,34 +159,6 @@ public class ReservationForm extends JDialog implements FocusListener {
 		contentPanel.add(name);
 		name.setColumns(10);
 
-		JButton edit = new JButton("Edit Reservation");
-		edit.setVisible(false);
-		edit.setForeground(Color.RED);
-		edit.setFont(new Font("Cambria Math", Font.BOLD, 20));
-		// edit.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent e) {
-		// if (edit.getActionCommand().equalsIgnoreCase("confirm")) {
-		// int n = -1;
-		// try {
-		// n = Integer.parseInt(number.getText());
-		// } catch (Exception r) {
-		// number.setBackground(Color.red);
-		// JOptionPane.showMessageDialog(null, "Enter a correct integer value for number. No changes have been made.", "Error", JOptionPane.ERROR_MESSAGE);
-		// return;
-		// }
-		// number.setBackground(Color.white);////////// ERROR BELOW WITH EDTING FIXX LIST SELECTION!!!!CAN BE NULL
-		// sql.editReservation(n, new Customer(name.getText(), stylists.get(list.getSelectedValue().toString()).getID(), n, tf_phone.getText()));
-		// return;
-		// }
-		// btnReserve.setEnabled(false);
-		// changePanel.setVisible(true);
-		// edit.setText("<html><font color=red>Confirm<br>Changes</font></html>");
-		// edit.setActionCommand("confirm");
-		// }
-		// });
-		edit.setBounds(566, 308, 269, 27);
-		contentPanel.add(edit);
-
 		btnReserve = new JButton("Reserve");
 		btnReserve.setFont(new Font("Cambria Math", Font.BOLD, 20));
 		btnReserve.addActionListener(new ActionListener() {
@@ -195,10 +181,10 @@ public class ReservationForm extends JDialog implements FocusListener {
 		lblNewLabel_2.setBounds(561, 0, 167, 27);
 		contentPanel.add(lblNewLabel_2);
 
-		current_ticket_label = new JLabel("");
+		current_ticket_label = new JLabel(AdvertismentScreen.NUMBER + "");
 		current_ticket_label.setHorizontalAlignment(SwingConstants.CENTER);
 		current_ticket_label.setFont(new Font("Cambria Math", Font.BOLD, 22));
-		current_ticket_label.setBorder(new LineBorder(Color.BLUE));
+		current_ticket_label.setBorder(new LineBorder(new Color(0, 0, 255), 2));
 		current_ticket_label.setIgnoreRepaint(true);
 		current_ticket_label.setBounds(738, 3, 97, 24);
 		contentPanel.add(current_ticket_label);
@@ -214,37 +200,19 @@ public class ReservationForm extends JDialog implements FocusListener {
 		tf_phone.setBounds(643, 108, 192, 28);
 		tf_phone.addFocusListener(this);
 		contentPanel.add(tf_phone);
-
-		JLabel lblWaitForNo = new JLabel("Wait with no preference:");
-		lblWaitForNo.setVisible(false);
-		lblWaitForNo.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblWaitForNo.setBounds(10, 311, 182, 24);
-		contentPanel.add(lblWaitForNo);
-
-		JLabel wait_label = new JLabel("");
-		wait_label.setFont(new Font("Tahoma", Font.BOLD, 14));
-		wait_label.setBounds(202, 311, 354, 24);
-		contentPanel.add(wait_label);
-
-		JLabel lblYourTicket = new JLabel("Your Ticket: " + AdvertismentScreen.NUMBER);
-		lblYourTicket.setVisible(false);
-		lblYourTicket.setHorizontalTextPosition(SwingConstants.LEFT);
-		lblYourTicket.setFont(new Font("Cambria Math", Font.BOLD, 22));
-		lblYourTicket.setBounds(561, 31, 135, 27);
-		contentPanel.add(lblYourTicket);
-
-		your_ticket_label = new JLabel("");
-		your_ticket_label.setVisible(false);
-		your_ticket_label.setIgnoreRepaint(true);
-		your_ticket_label.setHorizontalAlignment(SwingConstants.CENTER);
-		your_ticket_label.setFont(new Font("Cambria Math", Font.BOLD, 22));
-		your_ticket_label.setBorder(new LineBorder(Color.BLUE));
-		your_ticket_label.setBounds(738, 31, 97, 24);
-		contentPanel.add(your_ticket_label);
 		this.setLocationRelativeTo(null);
-		this.setResizable(false);
+		addWindowListener(new WindowAdapter() {
 
-		// this.setVisible(true);
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+					conn.close();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            }
+        });
 	}
 
 	private void generateGuaranteePriority() {
@@ -298,7 +266,7 @@ public class ReservationForm extends JDialog implements FocusListener {
 			msg.setFrom(new InternetAddress("no-reply@noreply.com", POSFrame.businessName));
 
 			for (String sms_gateway : this.SMS_GATEWAY) {
-				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(c.getPhoneNumber()+sms_gateway, "Valued Client"));
+				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(c.getPhoneNumber() + sms_gateway, "Valued Client"));
 
 			}
 			msg.setSubject("Reservation Receipt");
@@ -342,8 +310,11 @@ public class ReservationForm extends JDialog implements FocusListener {
 		if (!list.isSelectionEmpty()) {
 			s = stylists.get(list.getSelectedValue().toString());// specified stylist
 		}
-
-		Customer c = new Customer(name.getText(), s.getID(), tf_phone.getText());// create customer
+		String phone = "";
+		if (this.tf_phone.getText().length() == 10) {
+			phone = this.tf_phone.getText();
+		}
+		Customer c = new Customer(name.getText(), s.getID(), phone);// create customer
 		c.setStylistName(s.getName());
 		new Thread(new Runnable() {
 
@@ -356,7 +327,21 @@ public class ReservationForm extends JDialog implements FocusListener {
 				}
 			}
 		}).start();
-		AdvertismentScreen.NUMBER += 1;
+		////////////////// LOCAL STORAGE
+		String customer = c.getName();
+		int space = 30;// number of max space
+		int x = Math.abs(space - c.getStylistName().length());
+		// int y= Math.abs(space - customer.length());
+		String stylist = c.getStylistName() + String.format("%1$-" + x + "s", " ");
+
+		Ticket t = new Ticket(AdvertismentScreen.NUMBER, stylist, customer, Long.parseLong(POSFrame.SQL.USER_DB));
+		String string = String.format("%1$-" + 10 + "s", t.getNumber()) + stylist + String.format("%1$" + space + "s", customer);
+		t.setToString(string);
+		POSFrame.ListModel.addElement(t);
+		POSFrame.Tickets.put(t.getNumber(), t);
+		AdvertismentScreen.NUMBER = t.getNumber() + 1;/// should be correct increment
+		AdvertismentScreen.updateTicketLabel();
+		////////////////////////////////////////////////////
 		new Thread(new Runnable() {
 
 			@Override
@@ -365,7 +350,7 @@ public class ReservationForm extends JDialog implements FocusListener {
 			}
 		}).start();
 
-
+		this.dispose();
 	}
 
 	private void reset() {

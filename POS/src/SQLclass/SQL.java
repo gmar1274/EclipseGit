@@ -1293,12 +1293,12 @@ public class SQL {
 		HashMap<String, Stylist> h = new HashMap<>();
 		Connection conn = null;
 		PreparedStatement p = null;
-		ResultSet r = null;
+		ResultSet rs = null;
 		try {
 			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
 			p = conn.prepareStatement("select * from employee");
-			ResultSet rs = p.executeQuery();
-			r = rs;
+			rs= p.executeQuery();
+			
 			// STEP 5: Extract data from result set
 			while (rs.next()) {
 				String fname = rs.getString("fname");
@@ -1309,11 +1309,13 @@ public class SQL {
 				Stylist s = new Stylist(id, fname, mname, lname, comm);
 				h.put(s.getName(), s);
 			}
+			Stylist s = new Stylist();
+			h.put(s.getName(), s);
 			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			this.closeConnections(p, r, conn);
+			this.closeConnections(p, rs, conn);
 		}
 		return h;
 	}
@@ -1901,24 +1903,26 @@ public class SQL {
 		}
 		return h;
 	}
-/***
- * Will generate a new record in the live_feed DB and release connection
- * */
+
+	/***
+	 * Will generate a new record in the live_feed DB and release connection
+	 */
 	public void confirmNewTicket(Customer c, Connection oldcon) {
 		Connection conn = null;
 		PreparedStatement p = null;
 		ResultSet r = null;
 		try {
-			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
-			p = conn.prepareStatement("INSERT INTO `live_feed` (`date_time`, `customer_name`, `stylist_request_id`,`email`,`phone`) " + "VALUES (?,?,?,?,?)");
+			//conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
+			
+			p = oldcon.prepareStatement("INSERT INTO `live_feed` (`date_time`, `customer_name`, `stylist_request_id`,`email`,`phone`) " + "VALUES (?,?,?,?,?)");
 			p.setString(1, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 			p.setString(2, c.getName());
 			p.setString(3, c.getStylistID());
 			p.setString(4, c.getEmail());
 			p.setString(5, c.getPhoneNumber());
 			p.execute();
-			
-			p = conn.prepareStatement("UNLOCK TABLES");
+
+			p = oldcon.prepareStatement("UNLOCK TABLES");
 			p.execute();
 			oldcon.close();
 		} catch (SQLException e) {
@@ -1979,46 +1983,41 @@ public class SQL {
 	 * this method will update the ticket screen for the pos and only include those of which is not in lc. lc is the canceled haircut. You are considered canceled/or on hold if no customer responds or
 	 * isnt there when their turn is called.
 	 */
-	public void updatePOSTicketScreen(DefaultListModel<Ticket> lm, DefaultListModel<Ticket> lc) {
+	public void updatePOSTicketScreen(DefaultListModel<Ticket> lm, HashMap<Integer, Ticket> tickets, HashMap<Integer, Ticket> onHold) {
 		Connection conn = null;
 		PreparedStatement p = null;
 		ResultSet r = null;
 		try {
-			HashMap<Integer, Ticket> cancel_list = new HashMap<Integer, Ticket>();
-			for (int i = 0; i < lc.size(); ++i) {
-				Ticket t = lc.get(i);
-				cancel_list.put(t.getNumber(), t);
-			}
-			lm.clear();
-			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
 
-			p = conn.prepareStatement("SELECT T.ticket_number,T.store_id, T.stylist, T.temp_name From `acba_app`.`ticket` T, `acba_" + this.USER_DB
-			+ "`.`client` C WHERE T.store_id=C.id AND Date(T.datetime_submitted)=Date(Now()) ORDER BY T.ticket_number ASC");
+			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
+			String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+			p = conn.prepareStatement("SELECT ticket_number,temp_name,stylist FROM acba_app.ticket WHERE store_id='" + this.USER_DB + "' AND Date(datetime_submitted)=Date('" + date
+			+ "') UNION SELECT id,customer_name,stylist_request_id FROM acba_"+this.USER_DB+".live_feed WHERE Date(date_time)=Date('" + date + "') ORDER BY ticket_number ASC");
 			r = p.executeQuery();
 			int space = 30;// number of max space
 			while (r.next()) {
-				long store_id = r.getLong("T.store_id");
-				int ticket = r.getInt("T.ticket_number");
-				String id = r.getString("T.stylist");
-				String stylist = "No Preference";
+				long store_id = Long.parseLong(this.USER_DB);
+				int ticket = r.getInt("ticket_number");
+				String id = r.getString("stylist");
+				String stylist = "No Preference";/////////// name of stylist
 				Stylist s = this.stylist_login.get(id);
 				if (s != null) {
 					stylist = this.stylist_login.get(id).getName();
 				}
-				String customer = r.getString("T.temp_name");
+				String customer = r.getString("temp_name");
 				int x = Math.abs(space - stylist.length());
 				// int y= Math.abs(space - customer.length());
 				stylist = stylist + String.format("%1$-" + x + "s", " ");
 
-				String string = String.format("%1$-" + 10 + "s", ticket) + stylist + String.format("%1$" + space + "s", customer);
 				Ticket t = new Ticket(ticket, stylist, customer, store_id);
+				String string = String.format("%1$-" + 10 + "s", ticket) + stylist + String.format("%1$" + space + "s", customer);
 				t.setToString(string);
-				if (!cancel_list.containsKey(t.getNumber())) {// if not in cancel list then populate.
+				//System.out.println(t);
+				if (!tickets.containsKey(t.getNumber()) && !onHold.containsKey(t.getNumber())) {
 					lm.addElement(t);
+					tickets.put(t.getNumber(), t);
 				}
-				// System.out.println(string);//+" x: "+x+" y: "+y );
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -2031,52 +2030,49 @@ public class SQL {
 	/***
 	 * This methods makes a call to the db to update the data structure of the tickets waiting. 100% READ ONLY METHOD.
 	 **/
-	public void updatePOSTicketScreen(PriorityQueue<Ticket> ticket_line, DefaultListModel<Ticket> lm) {
-		try {
+	// public void updatePOSTicketScreen(PriorityQueue<Ticket> ticket_line, DefaultListModel<Ticket> lm) {
+	// try {
+	//
+	// //lm.clear();
+	// Connection conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
+	// PreparedStatement p = conn.prepareStatement("SELECT T.ticket_number,T.store_id, T.stylist, T.temp_name From `acba_app`.`ticket` T, `acba_" + this.USER_DB
+	// + "`.`client` C WHERE T.store_id=C.id AND Date(T.datetime_submitted)=Date(Now()) ORDER BY T.ticket_number ASC");
+	// ResultSet r = p.executeQuery();
+	// int space = 30;// number of max space
+	// while (r.next()) {
+	// long store_id = r.getLong("T.store_id");
+	// int ticket = r.getInt("T.ticket_number");
+	// String id = r.getString("T.stylist");
+	// String stylist = "No Preference";/// if stylist s ==null this is the default
+	// Stylist s = this.stylist_login.get(id);
+	// if (s != null) {
+	// stylist = this.stylist_login.get(id).getName();
+	// }
+	// String customer = r.getString("T.temp_name");
+	// int x = Math.abs(space - stylist.length());
+	// // int y= Math.abs(space - customer.length());
+	// stylist = stylist + String.format("%1$-" + x + "s", " ");
+	//
+	// String string = String.format("%1$-" + 10 + "s", ticket) + stylist + String.format("%1$" + space + "s", customer);
+	// Ticket t = new Ticket(ticket, stylist, customer, store_id);
+	// t.setToString(string);
+	// if (!ticket_line.contains(t)) {
+	// ticket_line.add(t);
+	// lm.addElement(t);
+	// }
+	// }
+	// this.closeConnections(p, r, conn);
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// } finally {
+	// // this.closeConnections(p, r, conn);
+	// }
+	//
+	// }
 
-			lm.clear();
-			Connection conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
-			while (conn.isClosed()) {
-				conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
-				System.out.println("updating pos ticket waiting for connection...");
-			}
-			PreparedStatement p = conn.prepareStatement("SELECT T.ticket_number,T.store_id, T.stylist, T.temp_name From `acba_app`.`ticket` T, `acba_" + this.USER_DB
-			+ "`.`client` C WHERE T.store_id=C.id AND Date(T.datetime_submitted)=Date(Now()) ORDER BY T.ticket_number ASC");
-			ResultSet r = p.executeQuery();
-			int space = 30;// number of max space
-			while (r.next()) {
-				long store_id = r.getLong("T.store_id");
-				int ticket = r.getInt("T.ticket_number");
-				String id = r.getString("T.stylist");
-				String stylist = "No Preference";/// if stylist s ==null this is the default
-				Stylist s = this.stylist_login.get(id);
-				if (s != null) {
-					stylist = this.stylist_login.get(id).getName();
-				}
-				String customer = r.getString("T.temp_name");
-				int x = Math.abs(space - stylist.length());
-				// int y= Math.abs(space - customer.length());
-				stylist = stylist + String.format("%1$-" + x + "s", " ");
-
-				String string = String.format("%1$-" + 10 + "s", ticket) + stylist + String.format("%1$" + space + "s", customer);
-				Ticket t = new Ticket(ticket, stylist, customer, store_id);
-				t.setToString(string);
-				if (!ticket_line.contains(t)) {
-					ticket_line.add(t);
-					lm.addElement(t);
-				}
-
-				// System.out.println(string);//+" x: "+x+" y: "+y );
-			}
-			this.closeConnections(p, r, conn);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			// this.closeConnections(p, r, conn);
-		}
-
-	}
-
+	/***
+	 * Delete both the user's DB(acba_userid) and from the mobile APP's DB (acba_app). ONLY deleting ONE ticket but doesnt know which db its in so delete from both.
+	 */
 	public void deleteTicket(Ticket t) {
 		Connection conn = null;
 		PreparedStatement p = null;
@@ -2084,6 +2080,8 @@ public class SQL {
 		try {
 			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
 			p = conn.prepareStatement("delete From `acba_app`.`ticket` where store_id='" + this.USER_DB + "' AND ticket_number='" + t.getNumber() + "'");
+			p.execute();
+			p = conn.prepareStatement("delete From `acba_" + this.USER_DB + "`.`live_feed` where id='" + t.getNumber() + "'");
 			p.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2116,48 +2114,22 @@ public class SQL {
 		return ticket;
 	}
 
-	/**
-	 * Very important method. This will automatically create a priority ticket number in a DB designed to handle FIFO priority. This is a temporary DB that is designed to handle clashes between same
-	 * time users. DESIGN: Temporary DB (prevent_clash) and the actually official DB (ticket).
-	 *
-	 * It will pretend that the user is X number priority and communicate to all users that this spot is reserved. So the next user will see their ticket as X+1 even if the user doesnt decide to
-	 * reserve. Releasing that number from the temporary DB and finalizing the correct number in the actually DB.
-	 *
-	 * Step1: generate reservation in temporary db. (user_id, priority_ticket) Step2: update the official DB if the user decides to reserve by getting the most current ticket+1. (ticket+1 is the user
-	 * reservation spot. This will correct the user initially priority_ticket guaranteeing a correct order)
-	 **/
-	public int guaranteeTicket() {
-		Connection conn = null;
-		PreparedStatement p = null;
-		ResultSet r = null;
-		int guarantee_ticket = -1;
-		try {///////////////////////////////////// FIXXXXXXXXXXXXXXXXXXXXXXX
-			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
-			p = conn.prepareStatement("INSERT INTO `acba_app`.`prevent_clash` (`id`, `datetime_ticket_submitted`, `phone`, `name`) VALUES (NULL, '', NULL, ''); ");
-			r = p.executeQuery();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			this.closeConnections(p, r, conn);
-		}
-		return guarantee_ticket;
-	}
+	
 
 	public boolean redeemCoupon(Advertisment a, Customer cust) {
 		Connection conn = null;
 		PreparedStatement p = null;
-		
+
 		int guarantee_ticket = -1;
 		try {///////////////////////////////////// FIXXXXXXXXXXXXXXXXXXXXXXX
 			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
 			p = conn.prepareStatement("INSERT INTO `advertisement_coupon_redeemed` ( `date_time`, `customer_id`, `ad_id`) VALUES (?,?,?);");
-			//p.setString(1, "NULL");
-			
+			// p.setString(1, "NULL");
+
 			p.setString(1, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 			p.setLong(2, cust.getID());
 			p.setString(3, a.getBarcode());
-			return p.execute(); 
+			return p.execute();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2166,22 +2138,33 @@ public class SQL {
 			this.closeConnections(p, null, conn);
 		}
 	}
+
 	/****
-	 * This will lock the current session. This will be implemented along with
-	 * a Timer. Normally, once the timer is stopped then the session would 
-	 * release its hold.
-	 * */
+	 * This will lock the current session. This will be implemented along with a Timer. Normally, once the timer is stopped then the session would release its hold.
+	 */
 	public Connection lockTicketTable() {
 		Connection conn = null;
 		PreparedStatement p;
 		try {///////////////////////////////////// FIXXXXXXXXXXXXXXXXXXXXXXX
 			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
-			p = conn.prepareStatement("LOCK TABLE `live_feed` READ;");
+			p = conn.prepareStatement("LOCK TABLE `live_feed` WRITE;");
 			p.execute();
-			return conn; 
+			return conn;
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
 		return conn;
+	}
+	public boolean resetTicketCounter(){
+		Connection conn = null;
+		PreparedStatement p;
+		try {///////////////////////////////////// FIXXXXXXXXXXXXXXXXXXXXXXX
+			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
+			p = conn.prepareStatement("TRUNCATE TABLE acba_"+this.USER_DB+".live_feed;");
+			return p.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

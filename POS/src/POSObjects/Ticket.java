@@ -1,6 +1,6 @@
 package POSObjects;
 
-public class Ticket {
+public class Ticket implements Comparable {
 	private long ticket_id;// global
 	private long store_id;
 	private int number;
@@ -16,27 +16,45 @@ public class Ticket {
 		this.store_id = store_id;
 	}
 
-	public Ticket(int ticket, String stylist_name, String customer,long store_id) {// assume the program has the store id saved as user_db in SQL
+	public Ticket(int ticket, String stylist_name, String customer, long store_id) {// assume the program has the store id saved as user_db in SQL
 		this.number = ticket;
 		this.customer_name = customer;
 		this.stylist_name = stylist_name;
-		this.store_id=store_id;
-		this.isFinished=false;
+		this.store_id = store_id;
+		this.isFinished = false;
 	}
-	public void setFinished(){this.isFinished=true;}
-	public boolean isFinished(){return this.isFinished;}
+
+	public void setFinished() {
+		this.isFinished = true;
+	}
+
+	public boolean isFinished() {
+		return this.isFinished;
+	}
+
 	public int getNumber() {
 		return this.number;
 	}
+
 	public long getStore_id() {
 		return this.store_id;
 	}
 
 	public String toString() {
-		return string;//////customized formatted string to display
+		return string;////// customized formatted string to display
 	}
 
-	public void setToString(String s) {//sets the display string to a given formmatted string
+	public void setToString(String s) {// sets the display string to a given formmatted string
 		this.string = s;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		Ticket oo = (Ticket) o;
+		if (this.number < oo.getNumber()) {
+			return -1;
+		} else if (this.number > oo.getNumber()) {
+			return 1;
+		} else return 0;
 	}
 }

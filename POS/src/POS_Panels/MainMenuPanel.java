@@ -50,7 +50,7 @@ public class MainMenuPanel extends JPanel implements ActionListener {
 		this.setSize(POSFrame.WIDTH, POSFrame.HEIGHT);
 		setLayout(null);
 		labelStylist = new JLabel("Stylist:");
-		labelStylist.setForeground(Color.RED);
+		labelStylist.setForeground(Color.WHITE);
 		labelStylist.setFont(new Font("Arial", Font.BOLD, 20));
 		labelStylist.setBorder(new LineBorder(Color.BLUE, 3));
 		labelStylist.setHorizontalAlignment(SwingConstants.LEFT);
@@ -58,11 +58,12 @@ public class MainMenuPanel extends JPanel implements ActionListener {
 		add(labelStylist);
 		labelDate = new JLabel("");
 		labelDate.setFont(new Font("Arial", Font.BOLD, 20));
-		labelDate.setForeground(Color.RED);
+		labelDate.setForeground(Color.WHITE);
 		labelDate.setBorder(new LineBorder(Color.BLUE, 3));
 		labelDate.setBounds(708, 11, 302, 50);
 		add(labelDate);
-		JButton btnNewButton = new JButton("<html>Manager Settings</html>");
+		JButton btnNewButton = new JButton("<html>Manager<br>Settings</html>");
+		btnNewButton.setFont(new Font("Cambria Math", Font.PLAIN, 12));
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				EventQueue.invokeLater(new Runnable() {
@@ -84,6 +85,7 @@ public class MainMenuPanel extends JPanel implements ActionListener {
 		btnNewButton.setBounds(10, 670, 120, 63);
 		add(btnNewButton);
 		JButton btnclockInout = new JButton("<html>Clock In/Out</html>");
+		btnclockInout.setFont(new Font("Cambria Math", Font.PLAIN, 12));
 		btnclockInout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Stylist s = sql.isStylist(passwordField.getText());
@@ -262,39 +264,31 @@ public class MainMenuPanel extends JPanel implements ActionListener {
 		add(lblCustomerName);
 		timer.start();
 	}
-
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.drawImage(img, 0, 0, null);
 	}
-
 	private void loginError() {
 		passwordField.setText("");
 		passwordField.setBackground(Color.red);
 	}
-
 	private void resetPasswordField() {
 		passwordField.setText("");
 		passwordField.setBackground(Color.white);
 	}
-
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-
 		this.labelDate.setText(sdf.format(new Date()));
 	}
-
 	public void updateStylistLabelName() {
 		// Stylist s = sql.getStylist(this.CURRENT_STYLIST_ID);
 		this.labelStylist.setText("Stylist: " + STYLIST_OBJECT.getName());
 	}
-
 	public void grantAccess() {
 		// sql.updateStylist(passwordField.getText());
 		updateStylistLabelName();
 		resetPasswordField();
 	}
-
 	private void changeToTransactionScreen() {
 		MAIN_MENU_PANEL = this;
 		this.setVisible(false);

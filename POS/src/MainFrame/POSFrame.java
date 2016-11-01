@@ -3,11 +3,14 @@ package MainFrame;
 import java.awt.EventQueue;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import com.braintreegateway.BraintreeGateway;
 
 import Dialogs.Loading;
+import POSObjects.Ticket;
 import POS_Panels.MainMenuPanel;
 import ReservationScreenCustomerLogin.AdvertismentScreen;
 import SQLclass.SQL;
@@ -25,11 +28,17 @@ public class POSFrame extends JFrame {
 	public static Loading loading;
 	public static ArrayList network_failure_queue;
 	public static String SERVER_IP="gator4222.hostgator.com";
+	public static String businessName;
+	public static DefaultListModel<Ticket> ListModel;
+	public static HashMap<Integer,Ticket> Tickets, Canceled_Tickets;
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		network_failure_queue = new ArrayList<>();
+		ListModel = new DefaultListModel<>();
+		Tickets = new HashMap<Integer,Ticket>();
+		Canceled_Tickets = new HashMap<Integer,Ticket>();
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -55,7 +64,6 @@ public class POSFrame extends JFrame {
 
 	}
 
-	public static String businessName;
 
 	/**
 	 * Create the frame.

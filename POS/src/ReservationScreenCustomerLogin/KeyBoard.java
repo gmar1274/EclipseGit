@@ -66,9 +66,9 @@ public class KeyBoard extends JDialog {
 			this.getContentPane().add(new NumberPad(name, this));
 		} else {
 			this.setBounds(20, 500, 957, 250);
-			String r1 = "1234567890";
+			String r1 = "1234567890-=[]\\,./;'";
 			String r0 = "!@#$%^&*()_+|";
-			String r5 = "{}[];':\"-=\\,./<>?";
+			String r5 = "{}:<>?";
 			String r2 = "qwertyuiop";
 			String r3 = "asdfghjkl";
 			String r4 = "zxcvbnm";

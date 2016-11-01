@@ -131,7 +131,7 @@ public class ManagerSettingsPanel extends JPanel implements ActionListener {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						POSFrame.loading=new Loading();
+						POSFrame.loading = new Loading();
 						JChart c = new JChart(JChart.OVERVIEW.DAILY);
 						POSFrame.loading.dispose();
 					}
@@ -147,7 +147,7 @@ public class ManagerSettingsPanel extends JPanel implements ActionListener {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						POSFrame.loading=new Loading();
+						POSFrame.loading = new Loading();
 						JChart c = new JChart(JChart.OVERVIEW.MONTHLY);
 						POSFrame.loading.dispose();
 					}
@@ -164,7 +164,7 @@ public class ManagerSettingsPanel extends JPanel implements ActionListener {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						POSFrame.loading=new Loading();
+						POSFrame.loading = new Loading();
 						JChart c = new JChart(JChart.OVERVIEW.HOURLY);
 						POSFrame.loading.dispose();
 					}
@@ -180,7 +180,7 @@ public class ManagerSettingsPanel extends JPanel implements ActionListener {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						POSFrame.loading=new Loading();
+						POSFrame.loading = new Loading();
 						AdminPanelDialog frame = new AdminPanelDialog();
 						POSFrame.loading.dispose();
 						frame.setVisible(true);
@@ -193,18 +193,41 @@ public class ManagerSettingsPanel extends JPanel implements ActionListener {
 		admin.setBounds(873, 652, 129, 78);
 		add(admin);
 
+		JButton btnNewButton_1 = new JButton("<html>Reset Ticket<br>Counter</html>");
+		btnNewButton_1.setFont(new Font("Cambria Math", Font.BOLD, 12));
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						if (sql.resetTicketCounter()) {
+							JOptionPane.showMessageDialog(null, "Success", "Counter has been reset to 1.", JOptionPane.PLAIN_MESSAGE);
+
+						} else {
+							JOptionPane.showMessageDialog(null, "Error", "Counter did not reset. If problem persists contact ACBA support for help.", JOptionPane.ERROR_MESSAGE);
+						}
+
+					}
+				}).start();
+			}
+		});
+		btnNewButton_1.setVisible(false);
+		btnNewButton_1.setBounds(480, 297, 121, 70);
+		add(btnNewButton_1);
+
 		updateScreen();
-	
+
 	}
 
 	private void updateScreen() {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				Loading l =new Loading();
+				Loading l = new Loading();
 				sql.displayDailyGross(screen);
 				l.dispose();
-				l=null;
+				l = null;
 			}
 		}).start();
 	}

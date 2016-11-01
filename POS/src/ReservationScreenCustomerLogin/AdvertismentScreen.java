@@ -1,6 +1,7 @@
 package ReservationScreenCustomerLogin;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -38,6 +39,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
+import java.awt.FlowLayout;
 
 public class AdvertismentScreen extends JFrame implements ActionListener {
 	private SQL sql;
@@ -45,8 +47,13 @@ public class AdvertismentScreen extends JFrame implements ActionListener {
 	// public static PriorityQueue<Customer> queue;
 	public static int NUMBER;
 	private DefaultListModel<Ticket> lm;
-	public static PriorityQueue<Ticket> ticket_line;
+	HashMap<Integer, Ticket> canceled_tickets;
+	// public static PriorityQueue<Ticket> ticket_line;
 	private Timer timer;
+	private HashMap<Integer, Ticket> tickets;
+	private JList list;
+	private static String ticket_text = "Next Ticket: ";
+	private static JLabel label_ticket;
 	/**
 	 * Launch the application.
 	 */
@@ -67,7 +74,10 @@ public class AdvertismentScreen extends JFrame implements ActionListener {
 	 * Create the frame.
 	 */
 	public AdvertismentScreen(SQL sql_param) {
-		ticket_line = new PriorityQueue<Ticket>();
+		// ticket_line = new PriorityQueue<Ticket>();
+		lm = POSFrame.ListModel;// new DefaultListModel<Ticket>();
+		this.canceled_tickets = POSFrame.Canceled_Tickets;
+		this.tickets = POSFrame.Tickets;
 		timer = new Timer(60 * 1000, this);// every 1 mins
 		timer.start();
 		if (POSFrame.SQL == null || sql_param == null) {
@@ -78,22 +88,18 @@ public class AdvertismentScreen extends JFrame implements ActionListener {
 		// this.NUMBER = sql.getCurrentTicket().getNumber();
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(1100, 790);
+		this.setSize(1050, 761);
 		this.setLocationRelativeTo(null);
 		getContentPane().setLayout(null);
 
 		JPanel panel = new JPanel();
-		panel.setBounds(0, 0, 163, 790);
+		panel.setBackground(java.awt.Color.RED);
+		panel.setBounds(0, 0, 155, 790);
 		getContentPane().add(panel);
 		panel.setLayout(null);
 
-		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setBounds(98, 0, 93, 55);
-		panel.add(lblNewLabel);
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 40));
-
 		JButton btn_ticket = new JButton("TAKE A TICKET");////////// opens the Reservation Screen
-		
+
 		btn_ticket.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new Thread(new Runnable() {
@@ -106,18 +112,17 @@ public class AdvertismentScreen extends JFrame implements ActionListener {
 				}).start();
 			}
 		});
-		btn_ticket.setFont(new Font("Cambria Math", Font.BOLD, 14));
-		btn_ticket.setBounds(4, 685, 154, 80);
-		
+		btn_ticket.setFont(new Font("Cambria Math", Font.BOLD, 12));
+		btn_ticket.setBounds(4, 685, 141, 80);
+
 		panel.add(btn_ticket);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(4, 23, 154, 658);
+		scrollPane.setBounds(4, 23, 141, 617);
 		panel.add(scrollPane);
-		lm = new DefaultListModel<Ticket>();
-		JList list = new JList();
-		list.setBorder(new LineBorder(new java.awt.Color(0, 0, 0)));
-		list.setModel(lm);
+		list = new JList();
+		list.setBorder(new LineBorder(new java.awt.Color(0, 0, 0), 2));
+
 		scrollPane.setViewportView(list);
 
 		JLabel lblTicket = new JLabel("Ticket # / Stylist");
@@ -125,11 +130,23 @@ public class AdvertismentScreen extends JFrame implements ActionListener {
 		lblTicket.setBounds(0, 0, 164, 22);
 		panel.add(lblTicket);
 
+		label_ticket = new JLabel();
+		label_ticket.setOpaque(true);
+		label_ticket.setBackground(java.awt.Color.WHITE);
+		label_ticket.setForeground(java.awt.Color.BLACK);
+		label_ticket.setBorder(new LineBorder(new java.awt.Color(0, 0, 0), 2));
+		label_ticket.setFont(new Font("Cambria Math", Font.BOLD, 18));
+		label_ticket.setBounds(4, 643, 141, 39);
+		panel.add(label_ticket);
+
 		JPanel ad_panel = new JPanel();
-		ad_panel.setBounds(161, 0, 939, 790);
+		ad_panel.setBackground(java.awt.Color.RED);
+		ad_panel.setBorder(new LineBorder(new java.awt.Color(255, 0, 0), 3));
+		ad_panel.setBounds(155, 0, 939, 761);
 		getContentPane().add(ad_panel);
-		ad_panel.setLayout(new GridLayout(4, 4, 0, 0));
+		ad_panel.setPreferredSize(new Dimension(50,50));
 		populateScreen(ad_panel);
+		ad_panel.setLayout(null);
 
 		ad_panel.setVisible(true);
 		this.setUndecorated(true);
@@ -141,28 +158,33 @@ public class AdvertismentScreen extends JFrame implements ActionListener {
 	 * This method will display and create the Advertisement Button display
 	 */
 	private void populateScreen(JPanel ad_panel) {
-		HashMap<String, Advertisment> h = this.sql.getAdvertisementDetailHashMap();
-		for (String name : h.keySet()) {// loop through AD's
+		HashMap<String, Advertisment> hm = this.sql.getAdvertisementDetailHashMap();
+		int x=0,y=0;
+		int w=295,h=200;
+		for (String name : hm.keySet()) {// loop through AD's
 			JButton b = new JButton();
 
 			b.setContentAreaFilled(false);
 			b.setBorder(BorderFactory.createEmptyBorder());
-			b.setActionCommand(h.get(name).getBarcode());
+			b.setActionCommand(hm.get(name).getBarcode());
 
 			b.setVisible(true);
-			ImageIcon ii = new ImageIcon(h.get(name).getImagePath());
+			ImageIcon ii = new ImageIcon(hm.get(name).getImagePath());
 			int scale = 1; // 2 times smaller
 			int width = ii.getIconWidth();
 			int newWidth = width / scale;
 			b.setIcon(new ImageIcon(ii.getImage().getScaledInstance(newWidth, -1, java.awt.Image.SCALE_SMOOTH)));
+			b.setBounds(x, y, w, h);
+			if(x>=w*2){x=0;y+=h;}
+			else{x+=w;}
 			b.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
 
-					ReedemCoupon r = new ReedemCoupon(h.get(name));
+					ReedemCoupon r = new ReedemCoupon(hm.get(name));
 					r.dispose();
-					}
+				}
 			});
 			ad_panel.add(b);
 		}
@@ -184,10 +206,22 @@ public class AdvertismentScreen extends JFrame implements ActionListener {
 
 			@Override
 			public void run() {
-				sql.updatePOSTicketScreen(ticket_line, lm);
-				AdvertismentScreen.NUMBER = lm.size() + 1;// update next number for ticket.
+				sql.updatePOSTicketScreen(lm, tickets, canceled_tickets);
+				list.setModel(lm);
+				Ticket t=null;
+				if(lm.size()>0){
+					t= lm.getElementAt(lm.size()-1);
+					NUMBER = t.getNumber() + 1;// update next number for ticket.
+				}else{
+					NUMBER = 1;
+				}
+				updateTicketLabel();
 			}
 
 		}).start();
+	}
+
+	public static void updateTicketLabel() {
+		label_ticket.setText(ticket_text + NUMBER);
 	}
 }
