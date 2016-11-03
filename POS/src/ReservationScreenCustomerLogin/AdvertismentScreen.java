@@ -215,6 +215,18 @@ public class AdvertismentScreen extends JFrame implements ActionListener {
 				}else{
 					NUMBER = 1;
 				}
+				if(NUMBER>=1000){
+					NUMBER = 1;
+					new Thread(new Runnable(){
+
+						@Override
+						public void run() {
+							sql.resetTicketCounter();
+							
+						}
+						
+					}).start();
+				}///////////end if
 				updateTicketLabel();
 			}
 

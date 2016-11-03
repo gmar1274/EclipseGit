@@ -207,7 +207,6 @@ public class ManagerSettingsPanel extends JPanel implements ActionListener {
 						} else {
 							JOptionPane.showMessageDialog(null, "Error", "Counter did not reset. If problem persists contact ACBA support for help.", JOptionPane.ERROR_MESSAGE);
 						}
-
 					}
 				}).start();
 			}

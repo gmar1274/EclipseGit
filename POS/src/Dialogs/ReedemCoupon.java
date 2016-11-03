@@ -30,6 +30,7 @@ public class ReedemCoupon extends JDialog implements FocusListener {
 	private KeyBoard kb;
 
 	public ReedemCoupon(Advertisment a) {
+		getContentPane().setBackground(Color.BLACK);
 		setTitle("ACBA: Redeem Coupon");
 		setModal(true);
 		setResizable(false);
@@ -40,6 +41,7 @@ public class ReedemCoupon extends JDialog implements FocusListener {
 		getContentPane().setLayout(null);
 
 		JLabel lblNewLabel = new JLabel("Email:");
+		lblNewLabel.setForeground(Color.WHITE);
 		lblNewLabel.setFont(new Font("Cambria Math", Font.PLAIN, 22));
 		lblNewLabel.setBounds(10, 11, 60, 39);
 		getContentPane().add(lblNewLabel);
@@ -51,6 +53,7 @@ public class ReedemCoupon extends JDialog implements FocusListener {
 		email.setColumns(10);
 
 		lblName = new JLabel("Name:");
+		lblName.setForeground(Color.WHITE);
 		lblName.setFont(new Font("Cambria Math", Font.PLAIN, 22));
 		lblName.setBounds(10, 52, 70, 39);
 		getContentPane().add(lblName);

@@ -3,14 +3,42 @@ package POSObjects;
 public class Ticket implements Comparable {
 	private long ticket_id;// global
 	private long store_id;
-	private int number;
+	private int number;///////////ticket number main variable
 	private String customer_name;
-	private String stylist_name;
+	private String stylist_name, stylist_id, email, phone;
 	private String string;
 	private boolean isFinished;
-	// Ticket(int ticket_id,int store_id,int stylist_id,String customer) {
+	private String datetime;
 
-	// }
+	public Ticket(String dt, String name, int ticket, String sty_id, String email, String phone) {
+		this.datetime = dt;
+		this.customer_name = name;
+		this.number = ticket;
+		this.stylist_id = sty_id;
+		this.email = email;
+		this.phone = phone;
+	}
+
+	public String getEmail() {
+		return this.email;
+	}
+
+	public String getPhone() {
+		return this.phone;
+	}
+
+	public String getStylistID() {
+		return this.stylist_id;
+	}
+
+	public String getName() {
+		return this.customer_name;
+	}
+
+	public String getDateTime() {
+		return this.datetime;
+	}
+
 	public Ticket(int ticket, long store_id) {// for getting the current ticket number for store
 		this.number = ticket;
 		this.store_id = store_id;

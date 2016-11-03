@@ -6,6 +6,7 @@ public class Customer implements Comparable<Customer> {
 	private long id;
 	private String email;
 	private String stylist_name, phone;
+	private short ticket;
 
 	public Customer(String name, String email) {
 		this.id = -1;
@@ -13,14 +14,15 @@ public class Customer implements Comparable<Customer> {
 		this.email = email;
 	}
 
-	public Customer(String name, String stylist_id, String phone) {
+	public Customer(short ticket,String name, String stylist_id, String phone) {
 		this.name = name;
 		this.stylist_id = stylist_id;
 		this.id = -1;
 		stylist_name = null;
 		this.phone = phone;
+		this.ticket=ticket;
 	}
-
+public short getTicketNumber(){return this.ticket;}
 	public String getPhoneNumber() {
 		return this.phone;
 	}

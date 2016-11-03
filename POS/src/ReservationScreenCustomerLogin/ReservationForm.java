@@ -314,7 +314,7 @@ public class ReservationForm extends JDialog implements FocusListener {
 		if (this.tf_phone.getText().length() == 10) {
 			phone = this.tf_phone.getText();
 		}
-		Customer c = new Customer(name.getText(), s.getID(), phone);// create customer
+		Customer c = new Customer((short) AdvertismentScreen.NUMBER,name.getText(), s.getID(), phone);// create customer
 		c.setStylistName(s.getName());
 		new Thread(new Runnable() {
 

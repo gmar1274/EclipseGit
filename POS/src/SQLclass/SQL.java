@@ -70,11 +70,6 @@ public class SQL {
 	final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	private String DB_URL = "jdbc:mysql://www.acbasoftware.com:3306/acba_";// need to add username to access uniqe store db
 	// "jdbc:mysql://localhost/acba";//
-	// Database credentials
-	// private PreparedStatement p = null;
-	// private ResultSet r = null;
-	// private Connection conn = null;
-
 	private DecimalFormat df;
 	private SimpleDateFormat sdf;
 	private HashMap<String, Stylist> stylist_login;
@@ -83,7 +78,6 @@ public class SQL {
 	private HashMap<String, Stylist> stylists;
 	private HashMap<String, Coupon> coupons;
 	private HashMap<String, Haircut> haircuts;
-	private JFrame f;
 	private HashMap<Integer, Integer> WEEKDAY;// Day and sold of a product
 	private HashMap<Integer, Ticket> tickets;// ticket
 	public static String USER_DB;
@@ -147,31 +141,13 @@ public class SQL {
 			if (action == JOptionPane.OK_OPTION && pwd.getText().length() > 0) {
 				pass = pwd.getText().toString();
 			} else {
-
 				throw new Exception();
 			}
+			POSFrame.loading.setVisible(true);//////////////////
 
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					JLabel label = new JLabel(new ImageIcon(POSFrame.PICTURE_DIRECTORY + "\\loading.gif"));
-					label.setBounds(0, 0, 360, 100);
-					f = new JFrame();
-					f.setAlwaysOnTop(true);
-					f.setSize(360, 100);
-					f.setLocationRelativeTo(null);
-					f.setUndecorated(true);
-					f.getContentPane().setLayout(null);
-					f.getContentPane().add(label);
-					f.setVisible(true);
-				}
-			}).start();
 			String server = Post.postRequest(WebServiceURL + "/pos/db.php",
 			"code=" + Encryption.encryptPassword("acbadbacba") + "&username=" + USER_DB + "&password=" + Encryption.encryptPassword(pass));
-
 			JSONObject json_server = Post.stringToJSON(server);
-
 			// JSONObject json = (JSONObject) json_server.get("cred");
 			// System.out.println("get: "+json);
 			POSFrame.USER = json_server.getString("db_user");
@@ -187,13 +163,11 @@ public class SQL {
 			System.exit(0);
 		} finally {
 			// this.closeConnections(p, r, conn);
-			f.dispose();
 		}
 	}
 
 	/////////////////
 	private void loadLoginCredentials() throws SQLException {
-
 		Connection conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
 		PreparedStatement p = conn.prepareStatement("select * from employee");
 		ResultSet r = p.executeQuery();
@@ -1297,8 +1271,8 @@ public class SQL {
 		try {
 			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
 			p = conn.prepareStatement("select * from employee");
-			rs= p.executeQuery();
-			
+			rs = p.executeQuery();
+
 			// STEP 5: Extract data from result set
 			while (rs.next()) {
 				String fname = rs.getString("fname");
@@ -1912,14 +1886,16 @@ public class SQL {
 		PreparedStatement p = null;
 		ResultSet r = null;
 		try {
-			//conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
-			
-			p = oldcon.prepareStatement("INSERT INTO `live_feed` (`date_time`, `customer_name`, `stylist_request_id`,`email`,`phone`) " + "VALUES (?,?,?,?,?)");
-			p.setString(1, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+			// conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
+
+			p = oldcon.prepareStatement("INSERT INTO `live_feed` (`date_time`, `customer_name`,`id`, `stylist_request_id`,`email`,`phone`) " + "VALUES (?,?,?,?,?,?)");
+			Timestamp now = new Timestamp(new Date().getTime());
+			p.setTimestamp(1, now);
 			p.setString(2, c.getName());
-			p.setString(3, c.getStylistID());
-			p.setString(4, c.getEmail());
-			p.setString(5, c.getPhoneNumber());
+			p.setShort(3, c.getTicketNumber());
+			p.setString(4, c.getStylistID());
+			p.setString(5, c.getEmail());
+			p.setString(6, c.getPhoneNumber());
 			p.execute();
 
 			p = oldcon.prepareStatement("UNLOCK TABLES");
@@ -1991,8 +1967,8 @@ public class SQL {
 
 			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
 			String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-			p = conn.prepareStatement("SELECT ticket_number,temp_name,stylist FROM acba_app.ticket WHERE store_id='" + this.USER_DB + "' AND Date(datetime_submitted)=Date('" + date
-			+ "') UNION SELECT id,customer_name,stylist_request_id FROM acba_"+this.USER_DB+".live_feed WHERE Date(date_time)=Date('" + date + "') ORDER BY ticket_number ASC");
+			p = conn.prepareStatement("SELECT ticket_number,temp_name,stylist,datetime_submitted FROM acba_app.ticket WHERE store_id='" + this.USER_DB + "' AND Date(datetime_submitted)=Date('" + date
+			+ "') UNION SELECT id,customer_name,stylist_request_id,date_time FROM acba_" + this.USER_DB + ".live_feed WHERE Date(date_time)=Date('" + date + "') ORDER BY datetime_submitted ASC");
 			r = p.executeQuery();
 			int space = 30;// number of max space
 			while (r.next()) {
@@ -2012,7 +1988,7 @@ public class SQL {
 				Ticket t = new Ticket(ticket, stylist, customer, store_id);
 				String string = String.format("%1$-" + 10 + "s", ticket) + stylist + String.format("%1$" + space + "s", customer);
 				t.setToString(string);
-				//System.out.println(t);
+				// System.out.println(t);
 				if (!tickets.containsKey(t.getNumber()) && !onHold.containsKey(t.getNumber())) {
 					lm.addElement(t);
 					tickets.put(t.getNumber(), t);
@@ -2114,8 +2090,6 @@ public class SQL {
 		return ticket;
 	}
 
-	
-
 	public boolean redeemCoupon(Advertisment a, Customer cust) {
 		Connection conn = null;
 		PreparedStatement p = null;
@@ -2155,15 +2129,41 @@ public class SQL {
 		}
 		return conn;
 	}
-	public boolean resetTicketCounter(){
+
+	public boolean resetTicketCounter() {
 		Connection conn = null;
-		PreparedStatement p;
+		PreparedStatement p = null;
+		ResultSet r = null;
 		try {///////////////////////////////////// FIXXXXXXXXXXXXXXXXXXXXXXX
 			conn = DriverManager.getConnection(DB_URL, POSFrame.USER, POSFrame.PASS);
-			p = conn.prepareStatement("TRUNCATE TABLE acba_"+this.USER_DB+".live_feed;");
-			return p.execute();
+			String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+			p = conn.prepareStatement("Select * FROM acba_" + this.USER_DB + ".live_feed WHERE Date(date_time)=Date('" + date + "') ORDER BY date_time ASC");
+			r = p.executeQuery();
+			ArrayList<Ticket> al = new ArrayList<>();
+			while (r.next()) {
+				String dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(r.getTimestamp("date_time"));
+				String name = r.getString("customer_name");
+				short ticket = r.getShort("id");
+				String stylist_id = r.getString("stylist_request_id");
+				String email = r.getString("email");
+				String phone = r.getString("phone");
+				Ticket t = new Ticket(dt, name, ticket, stylist_id, email, phone);
+				al.add(t);
+			}
+			p = conn.prepareStatement("TRUNCATE TABLE acba_" + this.USER_DB + ".live_feed;");
+			p.execute();
+			for (Ticket t : al) {
+				p = conn.prepareStatement("INSERT INTO `acba_" + this.USER_DB + "`.`live_feed` (`date_time`, `customer_name`, `id`, `stylist_request_id`, `email`, `phone`) VALUES ('" + t.getDateTime()
+				+ "', '" + t.getName() + "', '" + t.getNumber() + "', '" + t.getStylistID() + "', '" + t.getEmail() + "', '" + t.getPhone() + "');");
+				p.execute();
+			}
+			return true;
+
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), ()->this.resetTicketCounter());
 			e.printStackTrace();
+		} finally {
+			this.closeConnections(p, r, conn);
 		}
 		return false;
 	}
