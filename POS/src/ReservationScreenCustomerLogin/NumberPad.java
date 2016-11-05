@@ -19,9 +19,9 @@ public class NumberPad extends JPanel {
 	 */
 	public NumberPad(JTextField tf, JDialog parent) {
 		setLayout(null);
-		this.setSize(420, 320);
+		this.setSize(420, 370);
 		JPanel panel = new JPanel();
-		panel.setBounds(0, 0, 308, 320);
+		panel.setBounds(0, 0, 308, 370);
 		add(panel);
 
 		JButton btn1 = new JButton("1");
@@ -32,7 +32,7 @@ public class NumberPad extends JPanel {
 			}
 		});
 		panel.setLayout(new GridLayout(0, 3, 0, 0));
-		btn1.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btn1.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		panel.add(btn1);
 
 		JButton btn2 = new JButton("2");
@@ -42,7 +42,7 @@ public class NumberPad extends JPanel {
 				tf.setText(tf.getText() + "2");
 			}
 		});
-		btn2.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btn2.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		panel.add(btn2);
 
 		JButton btn3 = new JButton("3");
@@ -52,7 +52,7 @@ public class NumberPad extends JPanel {
 				tf.setText(tf.getText() + "3");
 			}
 		});
-		btn3.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btn3.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		panel.add(btn3);
 
 		JButton btn4 = new JButton("4");
@@ -62,7 +62,7 @@ public class NumberPad extends JPanel {
 				tf.setText(tf.getText() + "4");
 			}
 		});
-		btn4.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btn4.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		panel.add(btn4);
 
 		JButton btn5 = new JButton("5");
@@ -72,7 +72,7 @@ public class NumberPad extends JPanel {
 				tf.setText(tf.getText() + "5");
 			}
 		});
-		btn5.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btn5.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		panel.add(btn5);
 
 		JButton btn6 = new JButton("6");
@@ -82,7 +82,7 @@ public class NumberPad extends JPanel {
 				tf.setText(tf.getText() + "6");
 			}
 		});
-		btn6.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btn6.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		panel.add(btn6);
 
 		JButton btn7 = new JButton("7");
@@ -92,7 +92,7 @@ public class NumberPad extends JPanel {
 				tf.setText(tf.getText() + "7");
 			}
 		});
-		btn7.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btn7.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		panel.add(btn7);
 
 		JButton btn8 = new JButton("8");
@@ -102,7 +102,7 @@ public class NumberPad extends JPanel {
 				tf.setText(tf.getText() + "8");
 			}
 		});
-		btn8.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btn8.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		panel.add(btn8);
 
 		JButton btn9 = new JButton("9");
@@ -112,23 +112,33 @@ public class NumberPad extends JPanel {
 				tf.setText(tf.getText() + "9");
 			}
 		});
-		btn9.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btn9.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		panel.add(btn9);
-
-		JPanel panel_1 = new JPanel();
-		panel_1.setBounds(309, 0, 111, 320);
-		add(panel_1);
-
-		JButton btn0 = new JButton("0");
-		btn0.addActionListener(new ActionListener() {
+		
+		JButton button_1 = new JButton("");
+		button_1.setEnabled(false);
+		panel.add(button_1);
+		button_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JButton button = new JButton("0");
+		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (tf.getText().length() >= 10) return;
 				tf.setText(tf.getText() + "0");
 			}
 		});
+		panel.add(button);
+		button.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		
+		JButton button_2 = new JButton("");
+		button_2.setEnabled(false);
+		button_2.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		panel.add(button_2);
+
+		JPanel panel_1 = new JPanel();
+		panel_1.setBounds(309, 0, 101, 370);
+		add(panel_1);
 		panel_1.setLayout(new GridLayout(0, 1, 0, 0));
-		btn0.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		panel_1.add(btn0);
 
 		JButton btnDelete = new JButton("Delete");
 		btnDelete.setForeground(Color.RED);
@@ -139,7 +149,7 @@ public class NumberPad extends JPanel {
 				}
 			}
 		});
-		btnDelete.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		btnDelete.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		panel_1.add(btnDelete);
 
 		JButton btnEnter = new JButton("Enter");
@@ -148,9 +158,8 @@ public class NumberPad extends JPanel {
 				parent.dispose();
 			}
 		});
-		btnEnter.setFont(new Font("Tahoma", Font.BOLD, 16));
+		btnEnter.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		panel_1.add(btnEnter);
 
 	}
-
 }

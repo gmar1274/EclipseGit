@@ -115,7 +115,9 @@ public class ReedemCoupon extends JDialog implements FocusListener {
 		name.setBackground(Color.white);
 		email.setBackground(Color.white);
 	}
-
+/****
+ * Send image of coupon and
+ * */
 	private void generateBarcodeAndSendEmail() {
 		// send MSG through email then tell them it has been sent!
 		new Thread(new Runnable() {
@@ -157,7 +159,7 @@ public class ReedemCoupon extends JDialog implements FocusListener {
 			exit();
 		}
 
-		kb = new KeyBoard(tf, KeyBoard.KEYBOARD.KEYBOARD);
+		kb = new KeyBoard(tf, KeyBoard.KEYBOARD_TYPE.KEYBOARD);
 		if (this.isDefault(tf)) tf.setText("Required");
 		tf.setFocusable(false);
 		if (tf == name) {

@@ -27,7 +27,7 @@ import javax.swing.border.EmptyBorder;
 
 import POSObjects.Stylist;
 import POSObjects.Ticket;
-import ReservationScreenCustomerLogin.KeyBoard.KEYBOARD;
+import ReservationScreenCustomerLogin.KeyBoard.KEYBOARD_TYPE;
 import SQLclass.SQL;
 
 import javax.swing.JList;
@@ -323,7 +323,7 @@ public class ReservationForm extends JDialog implements FocusListener {
 				if (c.getPhoneNumber().length() == 10) {
 					JOptionPane.showMessageDialog(null, "Notification has been sent!");// \n*Note: Email may appear in your Spam Folder.");
 					dispose();
-					boolean sms = sendSMS(c, AdvertismentScreen.NUMBER);
+					boolean sms = sendSMS(c, c.getTicketNumber());
 				}
 			}
 		}).start();
@@ -385,7 +385,7 @@ public class ReservationForm extends JDialog implements FocusListener {
 		this.current_ticket_label.grabFocus();
 
 		if (e.getSource() == name) {
-			kb = new KeyBoard(name, KeyBoard.KEYBOARD.KEYBOARD);// grab focus to JLAbel
+			kb = new KeyBoard(name, KeyBoard.KEYBOARD_TYPE.KEYBOARD);// grab focus to JLAbel
 			if (name.getText().length() == 0) {
 				name.setText("Required");
 				name.setForeground(new Color(150, 150, 150));
@@ -393,7 +393,7 @@ public class ReservationForm extends JDialog implements FocusListener {
 			}
 		} else {
 			tf_phone.setText("");
-			kb = new KeyBoard(tf_phone, KeyBoard.KEYBOARD.NUMBER_PAD);
+			kb = new KeyBoard(tf_phone, KeyBoard.KEYBOARD_TYPE.NUMBER_PAD);
 			if (tf_phone.getText().length() == 0) {
 				tf_phone.setText("Optional: send alert if provided");
 				tf_phone.setForeground(new Color(150, 150, 150));

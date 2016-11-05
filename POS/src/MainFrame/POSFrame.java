@@ -48,6 +48,8 @@ public class POSFrame extends JFrame {
 			public void run() {
 				try {
 					SQL = new SQL();
+					loading.setVisible(false);
+					loading=null;
 //					for(int i=0;i<10;++i){
 //					network_error_map.put(network_error_map.size(), ()-> POSFrame.hello() );
 //					}
