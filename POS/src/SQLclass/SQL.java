@@ -63,6 +63,7 @@ import POSObjects.Product;
 import POSObjects.Stylist;
 import POSObjects.Ticket;
 import ReservationScreenCustomerLogin.Customer;
+import Util.Log;
 import WebServices.Post;
 
 public class SQL {
@@ -159,10 +160,11 @@ public class SQL {
 			this.loadShopDetails();
 		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Cannot connect to DB.\nCall ACBA for help.\nProgram Terminating.", "Database connection error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Cannot connect to DB.\nCall ACBA for help if error persists.\nProgram Terminating.\nRestart the program and try again.", "Database connection error",
+			JOptionPane.ERROR_MESSAGE);
+			Log.logError(e.getStackTrace());
+			POSFrame.loading.setVisible(false);//////////////////
 			System.exit(0);
-		} finally {
-			// this.closeConnections(p, r, conn);
 		}
 	}
 
@@ -225,6 +227,9 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getBusinessName());
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -274,6 +279,9 @@ public class SQL {
 			screen.setText(text);
 
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () ->this.displayDailyGross(screen));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -291,6 +299,8 @@ public class SQL {
 			p.execute();
 
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () ->this.setRegisterAmountBy(d));
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -309,6 +319,9 @@ public class SQL {
 				return r.getBigDecimal("cash_register");
 			}
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getCashRegisterAmount());
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -330,6 +343,9 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getBusinessOpenTimeHour());
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -355,6 +371,9 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getBusinessClosingTimeHour());
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -375,6 +394,9 @@ public class SQL {
 			while (r.next())
 				return r.getString("name");
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getEmployeeName(id));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -397,6 +419,9 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getEmployeesArrayList());
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -417,6 +442,9 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.wasWorkingOnDate(id, date));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -441,6 +469,9 @@ public class SQL {
 			p.execute();
 
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.updateTimeClockIn(id, date, starttime, endtime));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -551,6 +582,9 @@ public class SQL {
 			p.close();
 			rs.close();
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getEmployeeHourlyPay(start, end));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		}
 		return map;
@@ -808,6 +842,9 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.clockInOut(id));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -1205,6 +1242,9 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.isProduct(sku));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -1329,6 +1369,9 @@ public class SQL {
 			if (p != null) p.close();
 			if (conn != null) conn.close();
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.closeConnections(p, r, conn));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		}
 	}
@@ -1445,6 +1488,9 @@ public class SQL {
 			screen.setText(text);
 			return data;// return this.getRESULTS(dd, 7, trans, data, false, JChart.OVERVIEW.DAILY,screen);
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getWeeklyProductsForCharts(screen));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -1531,6 +1577,9 @@ public class SQL {
 			screen.setText(text);
 			return data;// return this.getRESULTS(dd, 7, trans, data, false, JChart.OVERVIEW.DAILY,screen);
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getDailyProductsForCharts(date, screen));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -1545,8 +1594,8 @@ public class SQL {
 	}
 
 	/** Purpose for this method is to get a WEEKLY OVERVIEW so will display a chart Mon-Sun of transactions **/
-	public DefaultCategoryDataset getDailyCustomersForCharts(JTextPane screen) {
-		if (screen == null) screen = new JTextPane();
+	public DefaultCategoryDataset getDailyCustomersForCharts(final JTextPane screen) {
+		//if (screen == null) screen = new JTextPane();
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
 		Connection conn = null;
 		PreparedStatement p = null;
@@ -1585,6 +1634,9 @@ public class SQL {
 			this.closeConnections(p, rs, conn);
 			return this.getRESULTS(dd, 7, trans, data, true, JChart.OVERVIEW.DAILY, screen);
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getDailyCustomersForCharts(screen));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -1633,6 +1685,9 @@ public class SQL {
 			this.closeConnections(p, rs, conn);
 			return this.getRESULTS(dd, 12, trans, dataset, true, JChart.OVERVIEW.MONTHLY, screen);
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getMonthlyCustomersForCharts(screen));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -1678,6 +1733,9 @@ public class SQL {
 			this.closeConnections(p, rs, conn);
 			return getRESULTS(dd, 12, trans, dataset, false, JChart.OVERVIEW.MONTHLY, screen);
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getMonthlyProductsForCharts(screen));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -1825,6 +1883,9 @@ public class SQL {
 			return data;
 
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getHourlyData(date, text));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -1995,6 +2056,9 @@ public class SQL {
 				}
 			}
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.updatePOSTicketScreen(lm, tickets, onHold));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -2038,7 +2102,7 @@ public class SQL {
 	// }
 	// }
 	// this.closeConnections(p, r, conn);
-	// } catch (Exception e) {
+	// } catch (Exception e) { Log.logError(e.getStackTrace());
 	// e.printStackTrace();
 	// } finally {
 	// // this.closeConnections(p, r, conn);
@@ -2060,6 +2124,9 @@ public class SQL {
 			p = conn.prepareStatement("delete From `acba_" + this.USER_DB + "`.`live_feed` where id='" + t.getNumber() + "'");
 			p.execute();
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.deleteTicket(t));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -2083,6 +2150,9 @@ public class SQL {
 				ticket = new Ticket(r.getInt("current_ticket"), r.getLong("id"));
 			}
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getCurrentTicket());
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
 			this.closeConnections(p, r, conn);
@@ -2106,6 +2176,9 @@ public class SQL {
 			return p.execute();
 
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.redeemCoupon(a, cust));
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -2125,11 +2198,20 @@ public class SQL {
 			p.execute();
 			return conn;
 		} catch (Exception e) {
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.lockTicketTable());
+			
+			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		}
 		return conn;
 	}
-
+/*****************
+ * When the shops ticket # surpasses 3digits then this method will reset the auto-increment
+ * counter to 1. It does this by saving all the current old numbers, truncates the table,
+ * then inserts the old tickets back into the table. *Note this could/will mess up the counter ai so
+ * that is why I have to pass in the ID field when inserting a new record. So in essence the 
+ * AI field is never utilised.
+ * */
 	public boolean resetTicketCounter() {
 		Connection conn = null;
 		PreparedStatement p = null;
@@ -2160,8 +2242,9 @@ public class SQL {
 			return true;
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), ()->this.resetTicketCounter());
+			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.resetTicketCounter());
 			e.printStackTrace();
+			Log.logError(e.getStackTrace());
 		} finally {
 			this.closeConnections(p, r, conn);
 		}
