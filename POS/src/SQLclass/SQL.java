@@ -227,7 +227,7 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getBusinessName());
+			POSFrame.network_error_map.put("getBusinessName".hashCode(), () -> this.getBusinessName());
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -279,7 +279,7 @@ public class SQL {
 			screen.setText(text);
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () ->this.displayDailyGross(screen));
+			POSFrame.network_error_map.put("displayDailyGross".hashCode(), () ->this.displayDailyGross(screen));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -299,7 +299,7 @@ public class SQL {
 			p.execute();
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () ->this.setRegisterAmountBy(d));
+			POSFrame.network_error_map.put("setRegisterAmountBy".hashCode(), () ->this.setRegisterAmountBy(d));
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		} finally {
@@ -319,7 +319,7 @@ public class SQL {
 				return r.getBigDecimal("cash_register");
 			}
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getCashRegisterAmount());
+			POSFrame.network_error_map.put("getCashRegisterAmount".hashCode(), () -> this.getCashRegisterAmount());
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -343,7 +343,7 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getBusinessOpenTimeHour());
+			POSFrame.network_error_map.put("getBusinessOpenTimeHour".hashCode(), () -> this.getBusinessOpenTimeHour());
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -371,7 +371,7 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getBusinessClosingTimeHour());
+			POSFrame.network_error_map.put("getBusinessClosingTimeHour".hashCode(), () -> this.getBusinessClosingTimeHour());
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -394,7 +394,7 @@ public class SQL {
 			while (r.next())
 				return r.getString("name");
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getEmployeeName(id));
+			POSFrame.network_error_map.put("getEmployeeName".hashCode(), () -> this.getEmployeeName(id));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -419,7 +419,7 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getEmployeesArrayList());
+			POSFrame.network_error_map.put("getEmployeesArrayList".hashCode(), () -> this.getEmployeesArrayList());
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -442,7 +442,7 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.wasWorkingOnDate(id, date));
+			POSFrame.network_error_map.put("wasWorkingOnDate".hashCode(), () -> this.wasWorkingOnDate(id, date));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -469,7 +469,7 @@ public class SQL {
 			p.execute();
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.updateTimeClockIn(id, date, starttime, endtime));
+			POSFrame.network_error_map.put("updateTimeClockIn".hashCode(), () -> this.updateTimeClockIn(id, date, starttime, endtime));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -582,7 +582,7 @@ public class SQL {
 			p.close();
 			rs.close();
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getEmployeeHourlyPay(start, end));
+			POSFrame.network_error_map.put("getEmployeeHourlyPay".hashCode(), () -> this.getEmployeeHourlyPay(start, end));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -842,7 +842,7 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.clockInOut(id));
+			POSFrame.network_error_map.put("clockInOut".hashCode(), () -> this.clockInOut(id));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -1242,7 +1242,7 @@ public class SQL {
 			}
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.isProduct(sku));
+			POSFrame.network_error_map.put("isProduct".hashCode(), () -> this.isProduct(sku));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -1369,14 +1369,14 @@ public class SQL {
 			if (p != null) p.close();
 			if (conn != null) conn.close();
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.closeConnections(p, r, conn));
+			POSFrame.network_error_map.put("closeConnections".hashCode(), () -> this.closeConnections(p, r, conn));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
 		}
 	}
 
-	private HashMap<String, Coupon> getCouponDetailHashMap() {
+	public HashMap<String, Coupon> getCouponDetailHashMap() {
 		HashMap<String, Coupon> h = new HashMap<>();
 		Connection conn = null;
 		PreparedStatement p = null;
@@ -1488,7 +1488,7 @@ public class SQL {
 			screen.setText(text);
 			return data;// return this.getRESULTS(dd, 7, trans, data, false, JChart.OVERVIEW.DAILY,screen);
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getWeeklyProductsForCharts(screen));
+			POSFrame.network_error_map.put("getWeeklyProductsForCharts".hashCode(), () -> this.getWeeklyProductsForCharts(screen));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -1577,7 +1577,7 @@ public class SQL {
 			screen.setText(text);
 			return data;// return this.getRESULTS(dd, 7, trans, data, false, JChart.OVERVIEW.DAILY,screen);
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getDailyProductsForCharts(date, screen));
+			POSFrame.network_error_map.put("getDailyProductsForCharts".hashCode(), () -> this.getDailyProductsForCharts(date, screen));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -1634,7 +1634,7 @@ public class SQL {
 			this.closeConnections(p, rs, conn);
 			return this.getRESULTS(dd, 7, trans, data, true, JChart.OVERVIEW.DAILY, screen);
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getDailyCustomersForCharts(screen));
+			POSFrame.network_error_map.put("getDailyCustomersForCharts".hashCode(), () -> this.getDailyCustomersForCharts(screen));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -1685,7 +1685,7 @@ public class SQL {
 			this.closeConnections(p, rs, conn);
 			return this.getRESULTS(dd, 12, trans, dataset, true, JChart.OVERVIEW.MONTHLY, screen);
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getMonthlyCustomersForCharts(screen));
+			POSFrame.network_error_map.put("getMonthlyCustomersForCharts".hashCode(), () -> this.getMonthlyCustomersForCharts(screen));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -1733,7 +1733,7 @@ public class SQL {
 			this.closeConnections(p, rs, conn);
 			return getRESULTS(dd, 12, trans, dataset, false, JChart.OVERVIEW.MONTHLY, screen);
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getMonthlyProductsForCharts(screen));
+			POSFrame.network_error_map.put("getMonthlyProductsForCharts".hashCode(), () -> this.getMonthlyProductsForCharts(screen));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -1883,7 +1883,7 @@ public class SQL {
 			return data;
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getHourlyData(date, text));
+			POSFrame.network_error_map.put("getHourlyData".hashCode(), () -> this.getHourlyData(date, text));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -2056,7 +2056,7 @@ public class SQL {
 				}
 			}
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.updatePOSTicketScreen(lm, tickets, onHold));
+			POSFrame.network_error_map.put("updatePOSTicketScreen".hashCode(), () -> this.updatePOSTicketScreen(lm, tickets, onHold));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -2124,7 +2124,7 @@ public class SQL {
 			p = conn.prepareStatement("delete From `acba_" + this.USER_DB + "`.`live_feed` where id='" + t.getNumber() + "'");
 			p.execute();
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.deleteTicket(t));
+			POSFrame.network_error_map.put("deleteTicket".hashCode(), () -> this.deleteTicket(t));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -2150,7 +2150,7 @@ public class SQL {
 				ticket = new Ticket(r.getInt("current_ticket"), r.getLong("id"));
 			}
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.getCurrentTicket());
+			POSFrame.network_error_map.put("getCurrentTicket".hashCode(), () -> this.getCurrentTicket());
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -2176,7 +2176,7 @@ public class SQL {
 			return p.execute();
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.redeemCoupon(a, cust));
+			POSFrame.network_error_map.put("redeemCoupon".hashCode(), () -> this.redeemCoupon(a, cust));
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -2198,7 +2198,7 @@ public class SQL {
 			p.execute();
 			return conn;
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.lockTicketTable());
+			POSFrame.network_error_map.put("lockTicketTable".hashCode(), () -> this.lockTicketTable());
 			
 			Log.logError(e.getStackTrace());
 			e.printStackTrace();
@@ -2242,7 +2242,7 @@ public class SQL {
 			return true;
 
 		} catch (Exception e) {
-			POSFrame.network_error_map.put(POSFrame.network_error_map.size(), () -> this.resetTicketCounter());
+			POSFrame.network_error_map.put("resetTicketCounter".hashCode(), () -> this.resetTicketCounter());
 			e.printStackTrace();
 			Log.logError(e.getStackTrace());
 		} finally {

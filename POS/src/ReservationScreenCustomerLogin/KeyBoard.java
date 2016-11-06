@@ -78,7 +78,7 @@ public class KeyBoard extends JDialog {
 			panel_3.setLayout(new GridLayout(1, 0, 0, 0));
 
 			JPanel panel_4 = new JPanel();
-			panel_4.setBounds(0, 164, 939, 47);
+			panel_4.setBounds(0, 174, this.getWidth(), 47);
 			contentPane.add(panel_4);
 			panel_4.setLayout(null);
 
@@ -114,7 +114,7 @@ public class KeyBoard extends JDialog {
 				}
 			});
 			btnEnter.setFont(new Font("Times New Roman", Font.BOLD, 14));
-			btnEnter.setBounds(839, 0, 100, 47);
+			btnEnter.setBounds(839, 0, 110, 47);
 			panel_4.add(btnEnter);
 
 			JToggleButton tglbtnNewToggleButton = new JToggleButton("Caps Lock");
@@ -167,6 +167,8 @@ public class KeyBoard extends JDialog {
 						pp.removeAll();
 						createButtons(r1, p);
 						createButtons(r2, pp);
+						p.repaint();
+						pp.repaint();
 						pack();
 					}
 				}

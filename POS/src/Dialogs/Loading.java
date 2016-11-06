@@ -19,6 +19,7 @@ public class Loading extends JDialog {
 	 * Create the dialog.
 	 */
 	public Loading() {
+		setTitle("ACBA: Loading...");
 		setResizable(false);
 		setSize(310, 100);
 		setLocationRelativeTo(null);

@@ -36,11 +36,11 @@ public class POSFrame extends JFrame implements ActionListener {
 	public static HashMap<Integer, Ticket> Tickets, Canceled_Tickets;// needed to share ticket info between customer Ad screen and POS main screen
 	public static HashMap<Integer, Runnable> network_error_map;
 	private final Timer t;
+
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		
 		ListModel = new DefaultListModel<>();
 		Tickets = new HashMap<Integer, Ticket>();
 		Canceled_Tickets = new HashMap<Integer, Ticket>();
@@ -52,11 +52,12 @@ public class POSFrame extends JFrame implements ActionListener {
 			public void run() {
 				try {
 					SQL = new SQL();
+
+					frame = new POSFrame();
+					frame.setVisible(true);
 					loading.setVisible(false);
 					loading.dispose();
 					loading = null;
-					// frame = new POSFrame();
-					// frame.setVisible(true);
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
@@ -93,9 +94,8 @@ public class POSFrame extends JFrame implements ActionListener {
 	 * Create the frame.
 	 */
 	public POSFrame() {
-		t = new Timer(1000*60,this);//1000=sec x 60 = min;
+		t = new Timer(1000 * 60, this);// 1000=sec x 60 = min;
 		businessName = SQL.getBusinessName();
-		this.loading.dispose();
 		setTitle("ACBA Software & Security Systems");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -108,7 +108,7 @@ public class POSFrame extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		new Thread(new Runnable(){
+		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				reattemptNetworkConnection();

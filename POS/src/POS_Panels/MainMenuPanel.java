@@ -57,6 +57,7 @@ public class MainMenuPanel extends JPanel implements ActionListener {
 		labelStylist.setBounds(10, 11, 370, 50);
 		add(labelStylist);
 		labelDate = new JLabel("");
+		labelDate.setHorizontalAlignment(SwingConstants.CENTER);
 		labelDate.setFont(new Font("Arial", Font.BOLD, 20));
 		labelDate.setForeground(Color.WHITE);
 		labelDate.setBorder(new LineBorder(Color.BLUE, 3));

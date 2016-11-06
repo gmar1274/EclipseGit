@@ -92,8 +92,12 @@ public class ReservationPanel extends JPanel implements ActionListener {
 		JButton btn_tticketDone = new JButton("Redeem");
 		btn_tticketDone.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (list.isSelectionEmpty()) return;
+				if(!list_cancel.isSelectionEmpty()){
+					list_cancel.remove(list_cancel.getSelectedIndex());
+				}
+				if (list.isSelectionEmpty() ) return;
 				int index = list.getSelectedIndex();
+				POSFrame.ListModel.remove(index);
 				Ticket t = lm.get(index);
 				updateDB(t);
 
@@ -123,12 +127,14 @@ public class ReservationPanel extends JPanel implements ActionListener {
 		Ticket ct = lm.remove(list.getSelectedIndex());
 		canceled_lm.addElement(ct);
 		canceled_tickets.put(ct.getNumber(), ct);
+		updateDB(ct);
 	}
 /********
  * This method will delete the redeemed ticket from the DB and update the 
  * Current list of tickets in line on the main screen POS. 
  * */
 	protected void updateDB(Ticket t) {
+	
 		new Thread(new Runnable() {
 
 			@Override

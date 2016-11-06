@@ -84,6 +84,7 @@ public class ReservationForm extends JDialog implements FocusListener {
 	 * Create the dialog.
 	 */
 	public ReservationForm(SQL sql) {
+		setResizable(false);
 		this.setIconImage(new ImageIcon(POSFrame.PICTURE_DIRECTORY + "\\").getImage());
 		getContentPane().setBackground(SystemColor.controlHighlight);
 		setTitle("ACBA: Request Stylist");
@@ -99,7 +100,7 @@ public class ReservationForm extends JDialog implements FocusListener {
 		}).start();
 		this.setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);
 		setModal(true);
-		this.setMinimumSize(new Dimension(865, 350));
+		this.setMinimumSize(new Dimension(855, 360));
 		// getContentPane().setLayout(new BorderLayout());
 		this.stylists = sql.getLoadedStylists();
 		DefaultListModel model_data = new DefaultListModel();
@@ -389,7 +390,8 @@ public class ReservationForm extends JDialog implements FocusListener {
 			if (name.getText().length() == 0) {
 				name.setText("Required");
 				name.setForeground(new Color(150, 150, 150));
-
+			}else{
+				name.setBackground(Color.WHITE);
 			}
 		} else {
 			tf_phone.setText("");
@@ -398,6 +400,8 @@ public class ReservationForm extends JDialog implements FocusListener {
 				tf_phone.setText("Optional: send alert if provided");
 				tf_phone.setForeground(new Color(150, 150, 150));
 
+			}else{
+				tf_phone.setBackground(Color.WHITE);
 			}
 		}
 
