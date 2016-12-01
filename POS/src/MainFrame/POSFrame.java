@@ -19,6 +19,7 @@ import POSObjects.Ticket;
 import POS_Panels.MainMenuPanel;
 import ReservationScreenCustomerLogin.AdvertismentScreen;
 import SQLclass.SQL;
+import Util.Log;
 import WebServices.Email;
 
 public class POSFrame extends JFrame implements ActionListener {
@@ -34,7 +35,7 @@ public class POSFrame extends JFrame implements ActionListener {
 	public static String businessName;
 	public static DefaultListModel<Ticket> ListModel;
 	public static HashMap<Integer, Ticket> Tickets, Canceled_Tickets;// needed to share ticket info between customer Ad screen and POS main screen
-	public static HashMap<Integer, Runnable> network_error_map;
+	public static ArrayList<Runnable> network_error_map;
 	private final Timer t;
 
 	/**
@@ -46,7 +47,7 @@ public class POSFrame extends JFrame implements ActionListener {
 		Canceled_Tickets = new HashMap<Integer, Ticket>();
 		loading = new Loading();
 		loading.setVisible(false);
-		network_error_map = new HashMap<>();
+		network_error_map = new ArrayList<>();
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -80,12 +81,13 @@ public class POSFrame extends JFrame implements ActionListener {
 	 * Attempt to send ovetr network if succeeds then release from hashtable.
 	 */
 	public void reattemptNetworkConnection() {
-		for (int i : network_error_map.keySet()) {
+		for (int i =0; i < network_error_map.size();++i) {
 			try {
 				network_error_map.get(i).run();
 				network_error_map.remove(i);
 			} catch (Exception e) {
 				e.printStackTrace();
+				Log.logError(e.getStackTrace());
 			}
 		}
 	}

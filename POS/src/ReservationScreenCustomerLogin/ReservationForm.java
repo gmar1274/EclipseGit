@@ -204,16 +204,36 @@ public class ReservationForm extends JDialog implements FocusListener {
 		this.setLocationRelativeTo(null);
 		addWindowListener(new WindowAdapter() {
 
-            @Override
-            public void windowClosing(WindowEvent e) {
-                try {
-					conn.close();
-				} catch (SQLException e1) {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				try {
+					if (conn == null) {
+						dispose();
+						return;
+					}
+					new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							sql.unlockTables(conn);
+							if (conn != null) {
+								try {
+									conn.close();
+								} catch (SQLException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+					}).start();
+					
+					dispose();
+				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-            }
-        });
+			}
+		});
 	}
 
 	private void generateGuaranteePriority() {
@@ -315,7 +335,7 @@ public class ReservationForm extends JDialog implements FocusListener {
 		if (this.tf_phone.getText().length() == 10) {
 			phone = this.tf_phone.getText();
 		}
-		Customer c = new Customer((short) AdvertismentScreen.NUMBER,name.getText(), s.getID(), phone);// create customer
+		Customer c = new Customer((short) AdvertismentScreen.NUMBER, name.getText(), s.getID(), phone);// create customer
 		c.setStylistName(s.getName());
 		new Thread(new Runnable() {
 
@@ -390,7 +410,7 @@ public class ReservationForm extends JDialog implements FocusListener {
 			if (name.getText().length() == 0) {
 				name.setText("Required");
 				name.setForeground(new Color(150, 150, 150));
-			}else{
+			} else {
 				name.setBackground(Color.WHITE);
 			}
 		} else {
@@ -400,7 +420,7 @@ public class ReservationForm extends JDialog implements FocusListener {
 				tf_phone.setText("Optional: send alert if provided");
 				tf_phone.setForeground(new Color(150, 150, 150));
 
-			}else{
+			} else {
 				tf_phone.setBackground(Color.WHITE);
 			}
 		}
